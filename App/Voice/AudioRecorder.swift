@@ -90,4 +90,9 @@ final class AudioRecorder {
         recorder = nil
         startDate = nil
     }
+
+    /// Gives the audio route back to other apps when the voice flow closes.
+    func deactivateSession() {
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
 }

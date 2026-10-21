@@ -55,8 +55,15 @@ final class AppModel {
         account = saved?.username
         route = saved == nil ? .loggedOut : .ready
         engine.onEvent = { [weak self] event in
-            MainActor.assumeIsolated {
-                self?.handle(event)
+            // Simperium calls its delegates on the main thread; hop there if that ever changes.
+            if Thread.isMainThread {
+                MainActor.assumeIsolated {
+                    self?.handle(event)
+                }
+            } else {
+                Task { @MainActor in
+                    self?.handle(event)
+                }
             }
         }
         if let saved {

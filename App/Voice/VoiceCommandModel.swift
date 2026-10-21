@@ -86,6 +86,7 @@ final class VoiceCommandModel {
         meterTask?.cancel()
         recorder.cancel()
         speech.stop()
+        recorder.deactivateSession()
     }
 
     func replayQuestion() {
