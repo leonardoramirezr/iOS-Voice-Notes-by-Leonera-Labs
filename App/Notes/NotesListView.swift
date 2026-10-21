@@ -86,13 +86,13 @@ private struct NotesList: View {
         List {
             if !pinned.isEmpty {
                 Section(L10n.notesPinned) {
-                    ForEach(pinned) { note in
+                    ForEach(pinned, id: \.objectID) { note in
                         row(note)
                     }
                 }
             }
             Section {
-                ForEach(others) { note in
+                ForEach(others, id: \.objectID) { note in
                     row(note)
                 }
             } header: {
