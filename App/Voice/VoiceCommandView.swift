@@ -112,7 +112,7 @@ struct VoiceCommandView: View {
             Text(message)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
-            if model.needsGroqKey {
+            if model.needsGroqKey, !app.settings.hasGroqKey {
                 Button(L10n.voiceOpenSettings) {
                     showSettings = true
                 }
