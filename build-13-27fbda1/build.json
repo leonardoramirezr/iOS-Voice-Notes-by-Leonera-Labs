@@ -1,0 +1,16 @@
+{
+  "branch": "claude/voice-edit-current-note",
+  "build_number": "13",
+  "bundle_id": "com.leonardoramirezr.voicenotesbyleoneralabs",
+  "channel": "branch",
+  "created_at": "2026-10-21T19:42:45Z",
+  "devices": "1",
+  "ipa": "VoiceNotes.ipa",
+  "repo": "leonardoramirezr/iOS-Voice-Notes-by-Leonera-Labs",
+  "run_id": "39663627251",
+  "run_number": "13",
+  "sha": "27fbda103e489cd7ca850659f6c7bda2cf62e59f",
+  "tag": "build-13-27fbda1",
+  "title": "Voice Notes by Leonera Labs",
+  "version": "0.2.0"
+}

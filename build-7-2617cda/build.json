@@ -1,0 +1,16 @@
+{
+  "branch": "claude/eloquent-fermi-ezdn5b",
+  "build_number": "7",
+  "bundle_id": "com.leonardoramirezr.voicenotesbyleoneralabs",
+  "channel": "branch",
+  "created_at": "2026-10-21T16:56:19Z",
+  "devices": "1",
+  "ipa": "VoiceNotes.ipa",
+  "repo": "leonardoramirezr/iOS-Voice-Notes-by-Leonera-Labs",
+  "run_id": "39638730641",
+  "run_number": "7",
+  "sha": "2617cda604675520baff2e4074d06585fe3b9889",
+  "tag": "build-7-2617cda",
+  "title": "Voice Notes by Leonera Labs",
+  "version": "0.0.0"
+}

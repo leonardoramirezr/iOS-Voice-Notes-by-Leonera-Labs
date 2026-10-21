@@ -1,0 +1,16 @@
+{
+  "branch": "claude/simplenote-access-code-error-drldzm",
+  "build_number": "10",
+  "bundle_id": "com.leonardoramirezr.voicenotesbyleoneralabs",
+  "channel": "branch",
+  "created_at": "2026-10-21T17:26:01Z",
+  "devices": "1",
+  "ipa": "VoiceNotes.ipa",
+  "repo": "leonardoramirezr/iOS-Voice-Notes-by-Leonera-Labs",
+  "run_id": "39643222122",
+  "run_number": "10",
+  "sha": "95279ff558a487fd74c370a9b83e68bda4898820",
+  "tag": "build-10-95279ff",
+  "title": "Voice Notes by Leonera Labs",
+  "version": "0.1.0"
+}
