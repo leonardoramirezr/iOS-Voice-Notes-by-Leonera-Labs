@@ -239,6 +239,23 @@
         }
       }
     },
+    "editor.voiceEdit" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit this note with your voice"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Editar esta nota con tu voz"
+          }
+        }
+      }
+    },
     "login.code" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1357,6 +1374,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nota nueva"
+          }
+        }
+      }
+    },
+    "voice.noteClarificationFallback" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I couldn't tell what to change in this note. Say it again with the change."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No entendí qué cambiar en esta nota. Dilo de nuevo con el cambio."
           }
         }
       }

@@ -1,4 +1,5 @@
 import SwiftUI
+import VoiceNotesCore
 
 /// Full-screen flow of a voice command: recording, progress, questions and the review of the changes.
 struct VoiceCommandView: View {
@@ -6,6 +7,8 @@ struct VoiceCommandView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var model: VoiceCommandModel?
     @State private var showSettings = false
+    /// The note the command is given in; nil when the command can change any note.
+    var focusedNote: NoteRecord?
 
     var body: some View {
         NavigationStack {
@@ -28,7 +31,7 @@ struct VoiceCommandView: View {
         }
         .task {
             if model == nil {
-                let voice = VoiceCommandModel(app: app)
+                let voice = VoiceCommandModel(app: app, focusedNote: focusedNote)
                 model = voice
                 await voice.startRecording()
             }

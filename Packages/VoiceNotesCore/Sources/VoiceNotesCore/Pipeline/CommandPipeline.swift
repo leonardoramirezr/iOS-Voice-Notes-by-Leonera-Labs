@@ -107,6 +107,23 @@ public struct CommandPipeline: Sendable {
             return .clarification(message: nil, language: language)
         }
 
+        return try await planEdits(conversation: conversation, targets: targets, language: language)
+    }
+
+    /// Plans the conversation as changes to `note` only: the command is given inside that note, so the step
+    /// that picks the notes is skipped and nothing else can be changed.
+    public func plan(conversation: [ConversationTurn], in note: NoteRecord) async throws -> PipelineOutcome {
+        let instruction = conversation.filter { $0.role == .user }.map(\.text).joined(separator: "\n")
+        let target = ResolvedTarget(kind: .existing(note), instruction: instruction)
+        return try await planEdits(conversation: conversation, targets: [target], language: nil)
+    }
+
+    /// Step B: plans the edit steps for the resolved notes and applies them, repairing invalid edits once.
+    private func planEdits(
+        conversation: [ConversationTurn],
+        targets: [ResolvedTarget],
+        language: String?
+    ) async throws -> PipelineOutcome {
         let refs = targets.indices.map { "T\($0 + 1)" }
         let planTargets = zip(refs, targets).map { ref, target -> Prompts.PlanTarget in
             let content = Self.content(of: target)

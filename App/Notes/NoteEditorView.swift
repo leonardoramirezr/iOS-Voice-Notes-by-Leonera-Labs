@@ -1,5 +1,6 @@
 import Combine
 import SwiftUI
+import VoiceNotesCore
 import VoiceNotesSync
 
 struct NoteEditorView: View {
@@ -8,6 +9,8 @@ struct NoteEditorView: View {
     @State private var model: NoteEditorModel
     @State private var confirmTrash = false
     @State private var deletedElsewhere = false
+    @State private var showVoice = false
+    @State private var voiceTarget: NoteRecord?
     @FocusState private var isFocused: Bool
 
     init(note: Note?, engine: SyncEngine) {
@@ -39,6 +42,19 @@ struct NoteEditorView: View {
                         .accessibilityLabel(L10n.notesTrash)
                     }
                 }
+            }
+            .safeAreaBar(edge: .bottom) {
+                if model.note != nil {
+                    HStack {
+                        Spacer()
+                        voiceButton
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 6)
+                }
+            }
+            .fullScreenCover(isPresented: $showVoice, onDismiss: { model.reloadSavedContent() }) {
+                VoiceCommandView(focusedNote: voiceTarget)
             }
             .onChange(of: model.text) {
                 model.textDidChange()
@@ -75,5 +91,26 @@ struct NoteEditorView: View {
                     dismiss()
                 }
             }
+    }
+
+    /// Floating button that dictates a change to this note only.
+    private var voiceButton: some View {
+        Button {
+            guard let target = model.voiceCommandTarget() else {
+                return
+            }
+            isFocused = false
+            voiceTarget = target
+            showVoice = true
+        } label: {
+            Image(systemName: "mic.fill")
+                .font(.title2)
+                .foregroundStyle(Color.accentColor)
+                .frame(width: 60, height: 60)
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .glassEffect(.regular.interactive(), in: .circle)
+        .accessibilityLabel(L10n.editorVoiceEdit)
     }
 }

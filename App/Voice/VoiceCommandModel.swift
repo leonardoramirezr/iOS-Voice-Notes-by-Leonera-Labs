@@ -3,7 +3,8 @@ import Observation
 import VoiceNotesCore
 
 /// Drives a voice command: record, transcribe with Whisper, plan with the LLM, ask for what is missing,
-/// review and save. The conversation is kept so extra audio completes or corrects the command.
+/// review and save. The conversation is kept so extra audio completes or corrects the command. A command given
+/// inside a note only changes that note.
 @MainActor
 @Observable
 final class VoiceCommandModel {
@@ -32,14 +33,17 @@ final class VoiceCommandModel {
     private(set) var needsGroqKey = false
 
     private let app: AppModel
+    /// The note the command was given in; nil when the command can change any note.
+    private let focusedNote: NoteRecord?
     private let recorder = AudioRecorder()
     private let speech = SpeechPlayer()
     private var language: String?
     @ObservationIgnored private var work: Task<Void, Never>?
     @ObservationIgnored private var meterTask: Task<Void, Never>?
 
-    init(app: AppModel) {
+    init(app: AppModel, focusedNote: NoteRecord? = nil) {
         self.app = app
+        self.focusedNote = focusedNote
     }
 
     var lastUserText: String? {
@@ -127,7 +131,7 @@ final class VoiceCommandModel {
         phase = .transcribing
         do {
             let audio = try Data(contentsOf: recording.url)
-            let titles = app.noteRecords().prefix(20).map(\.title)
+            let titles = focusedNote.map { [$0.title] } ?? app.noteRecords().prefix(20).map(\.title)
             let transcription = try await client.transcribe(
                 audio: audio,
                 fileName: "command.m4a",
@@ -155,17 +159,17 @@ final class VoiceCommandModel {
         let pipeline = CommandPipeline(model: GroqPlanningModel(client: client, model: app.settings.chatModel))
         let outcome: PipelineOutcome
         do {
-            outcome = try await pipeline.plan(conversation: conversation, notes: app.noteRecords())
+            outcome = try await run(pipeline)
         } catch GroqError.rateLimited(let retryAfter) where (retryAfter ?? 5) <= Self.maximumRateLimitWait {
             let seconds = Int((retryAfter ?? 5).rounded(.up))
             phase = .waitingForRateLimit(seconds: seconds)
             try await Task.sleep(for: .seconds(seconds))
             phase = .planning
-            outcome = try await pipeline.plan(conversation: conversation, notes: app.noteRecords())
+            outcome = try await run(pipeline)
         }
         switch outcome {
         case .clarification(let message, let language):
-            let question = message ?? L10n.voiceClarificationFallback
+            let question = message ?? (focusedNote == nil ? L10n.voiceClarificationFallback : L10n.voiceNoteClarificationFallback)
             conversation.append(ConversationTurn(role: .assistant, text: question))
             self.language = language
             changes = []
@@ -179,6 +183,17 @@ final class VoiceCommandModel {
             self.language = language
             phase = .review
         }
+    }
+
+    /// Plans against the current notes, or only against the current text of the focused note.
+    private func run(_ pipeline: CommandPipeline) async throws -> PipelineOutcome {
+        guard let focusedNote else {
+            return try await pipeline.plan(conversation: conversation, notes: app.noteRecords())
+        }
+        guard let note = app.noteRecord(withKey: focusedNote.key) else {
+            throw NoteSaveError.noteMissing(focusedNote.title)
+        }
+        return try await pipeline.plan(conversation: conversation, in: note)
     }
 
     // MARK: - Saving

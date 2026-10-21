@@ -100,6 +100,29 @@ final class NoteEditorModel {
         engine.save()
     }
 
+    // MARK: - Voice commands
+
+    /// The note as a plain value for a voice command given inside it. Pending edits are saved first so the
+    /// command plans against the text on screen.
+    func voiceCommandTarget() -> NoteRecord? {
+        save()
+        guard let note else {
+            return nil
+        }
+        return AppModel.record(of: note)
+    }
+
+    /// Shows the text a voice command saved into the note.
+    func reloadSavedContent() {
+        guard let note, !isDirty else {
+            return
+        }
+        let saved = note.content ?? ""
+        if saved != text {
+            text = saved
+        }
+    }
+
     // MARK: - Remote changes
 
     /// Remote changes are about to be applied: keep unsaved text in Core Data (without sending it yet) so
