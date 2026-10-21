@@ -1,0 +1,4 @@
+/* Name shown under the app icon. */
+"CFBundleDisplayName" = "Voice Notes by Leonera Labs";
+/* Shown when the app asks for microphone access. */
+"NSMicrophoneUsageDescription" = "Voice Notes records your voice commands to transcribe them and update your notes.";
