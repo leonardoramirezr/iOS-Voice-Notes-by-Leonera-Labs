@@ -4,7 +4,7 @@ import tempfile
 import unittest
 import zipfile
 
-import helpers  # noqa: F401
+import helpers
 import verify_ipa
 
 TEAM = "ABCDE12345"
@@ -79,6 +79,15 @@ class VerifyIpaTests(unittest.TestCase):
             self.assertEqual(len(verify_ipa.decode_profile(path)["ProvisionedDevices"]), 2)
         finally:
             os.remove(path)
+
+
+
+def setUpModule():
+    helpers.silence_stdout()
+
+
+def tearDownModule():
+    helpers.restore_stdout()
 
 
 if __name__ == "__main__":

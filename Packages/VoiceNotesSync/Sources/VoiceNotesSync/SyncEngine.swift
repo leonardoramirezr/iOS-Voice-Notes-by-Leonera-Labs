@@ -38,9 +38,9 @@ public final class SyncEngine {
             // The local database is new: forget sync markers and ghosts so everything is downloaded again.
             simperium.resetMetadata()
         }
+        store = NoteStore(context: stack.mainContext)
         simperium.delegate = adapter
         notesBucket?.delegate = adapter
-        store = NoteStore(context: stack.mainContext)
     }
 
     /// The main-queue context to use for the UI and for every local change.

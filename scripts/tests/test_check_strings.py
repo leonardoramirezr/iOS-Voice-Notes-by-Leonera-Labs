@@ -3,7 +3,7 @@ import os
 import tempfile
 import unittest
 
-import helpers  # noqa: F401
+import helpers
 import check_strings
 
 
@@ -42,6 +42,15 @@ class CheckStringsTests(unittest.TestCase):
 
     def test_repository_strings_are_complete(self):
         self.assertEqual(check_strings.main([]), 0)
+
+
+
+def setUpModule():
+    helpers.silence_stdout()
+
+
+def tearDownModule():
+    helpers.restore_stdout()
 
 
 if __name__ == "__main__":

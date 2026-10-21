@@ -3,7 +3,7 @@ import plistlib
 import tempfile
 import unittest
 
-import helpers  # noqa: F401  (adds scripts/ to sys.path)
+import helpers
 import ci
 
 ALL_SECRETS = {"ASC_KEY_ID": "K", "ASC_ISSUER_ID": "I", "ASC_KEY_P8": "P", "APPLE_TEAM_ID": "T"}
@@ -125,6 +125,15 @@ class ReleaseNotesTests(unittest.TestCase):
         self.assertIn("```\nitms-services://", notes)
         self.assertIn("Pre-release", notes)
         self.assertIn("devices: 2", notes)
+
+
+
+def setUpModule():
+    helpers.silence_stdout()
+
+
+def tearDownModule():
+    helpers.restore_stdout()
 
 
 if __name__ == "__main__":

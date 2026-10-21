@@ -140,6 +140,7 @@ class AppStoreConnect:
                 status, body = response.status, response.read()
         except urllib.error.HTTPError as error:
             status, body = error.code, error.read()
+            error.close()
         data = None
         if body:
             try:

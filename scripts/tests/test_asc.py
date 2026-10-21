@@ -8,7 +8,7 @@ import time
 import unittest
 import urllib.error
 
-import helpers  # noqa: F401
+import helpers
 import asc
 
 
@@ -211,6 +211,15 @@ class ApiTests(unittest.TestCase):
         client._token = "cached"
         client._token_created = time.time()
         self.assertEqual(client.token(), "cached")
+
+
+
+def setUpModule():
+    helpers.silence_stdout()
+
+
+def tearDownModule():
+    helpers.restore_stdout()
 
 
 if __name__ == "__main__":
