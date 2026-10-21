@@ -70,6 +70,7 @@ final class LoginModel {
         errorMessage = nil
     }
 
+    /// A readable message that says what went wrong, with the technical reason when there is one.
     static func message(for error: Error) -> String {
         switch error as? SimplenoteAuthError {
         case .invalidEmail:
@@ -80,10 +81,21 @@ final class LoginModel {
             return L10n.loginCodeExpired
         case .tooManyAttempts:
             return L10n.loginTooManyAttempts
-        case .network:
-            return L10n.networkError
-        default:
-            return L10n.loginFailed
+        case .network(let reason):
+            return withDetails(L10n.networkError, reason)
+        case .unexpectedStatus(let status, let detail):
+            return withDetails(L10n.loginServerError(status), detail)
+        case .invalidResponse:
+            return L10n.loginUnexpectedResponse
+        case nil:
+            return withDetails(L10n.loginFailed, error.localizedDescription)
         }
+    }
+
+    private static func withDetails(_ message: String, _ details: String?) -> String {
+        guard let details, !details.isEmpty else {
+            return message
+        }
+        return message + "\n" + L10n.errorDetails(details)
     }
 }

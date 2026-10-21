@@ -28,6 +28,13 @@ enum L10n {
     static var loginCodeExpired: String { String(localized: "login.codeExpired", defaultValue: "The code expired. Request a new one.") }
     static var loginTooManyAttempts: String { String(localized: "login.tooManyAttempts", defaultValue: "Too many attempts. Wait a few minutes and try again.") }
     static var loginFailed: String { String(localized: "login.failed", defaultValue: "Login failed. Try again.") }
+    static func loginServerError(_ status: Int) -> String {
+        String(localized: "login.serverError", defaultValue: "Simplenote rejected the request (HTTP \(status)).")
+    }
+    static var loginUnexpectedResponse: String { String(localized: "login.unexpectedResponse", defaultValue: "Simplenote sent a response the app could not read.") }
+    static func errorDetails(_ details: String) -> String {
+        String(localized: "common.errorDetails", defaultValue: "Details: \(details)")
+    }
     static var notesTitle: String { String(localized: "notes.title", defaultValue: "Notes") }
     static var notesPinned: String { String(localized: "notes.pinned", defaultValue: "Pinned") }
     static var notesOthers: String { String(localized: "notes.others", defaultValue: "Notes") }

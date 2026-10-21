@@ -37,6 +37,7 @@ struct LoginView: View {
                         .font(.callout)
                         .foregroundStyle(.red)
                         .multilineTextAlignment(.center)
+                        .textSelection(.enabled)
                 }
                 if let signup = URL(string: "https://app.simplenote.com/signup") {
                     Link(L10n.createAccount, destination: signup)

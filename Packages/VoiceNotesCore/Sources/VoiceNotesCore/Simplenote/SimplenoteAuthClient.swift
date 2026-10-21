@@ -19,7 +19,8 @@ public enum SimplenoteAuthError: Error, Equatable, Sendable {
     case invalidCode
     case codeExpired
     case tooManyAttempts
-    case unexpectedStatus(Int)
+    /// Any other HTTP error, with the server's reason when it sent one.
+    case unexpectedStatus(Int, detail: String?)
     case invalidResponse
     case network(String)
 }
@@ -119,7 +120,21 @@ public struct SimplenoteAuthClient: Sendable {
         case (_, "invalid-code"?):
             return .invalidCode
         default:
-            return .unexpectedStatus(status)
+            return .unexpectedStatus(status, detail: serverDetail(code: code, data: data))
         }
+    }
+
+    /// A short, readable reason from an error body: its JSON `error`/`message`, or its text without HTML tags.
+    static func serverDetail(code: String?, data: Data) -> String? {
+        let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        let text = code ?? (json?["message"] as? String) ?? String(decoding: data, as: UTF8.self)
+        let stripped = text
+            .replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
+            .split(whereSeparator: \.isWhitespace)
+            .joined(separator: " ")
+        guard !stripped.isEmpty else {
+            return nil
+        }
+        return stripped.count > 200 ? String(stripped.prefix(200)) + "…" : stripped
     }
 }

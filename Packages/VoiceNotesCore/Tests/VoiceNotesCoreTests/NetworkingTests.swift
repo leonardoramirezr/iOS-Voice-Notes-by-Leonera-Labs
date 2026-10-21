@@ -206,7 +206,10 @@ final class SimplenoteAuthClientTests: XCTestCase {
             (.init(status: 400, body: "{\"error\":\"invalid-code\"}"), .invalidCode),
             (.init(status: 400, body: "{\"error\":\"request-not-found\"}"), .codeExpired),
             (.init(status: 429, body: ""), .tooManyAttempts),
-            (.init(status: 500, body: ""), .unexpectedStatus(500)),
+            (.init(status: 500, body: ""), .unexpectedStatus(500, detail: nil)),
+            (.init(status: 400, body: "<!doctype html><title>400 Bad Request</title><h1>Bad Request</h1>"),
+             .unexpectedStatus(400, detail: "400 Bad Request Bad Request")),
+            (.init(status: 403, body: #"{"error":"account-disabled"}"#), .unexpectedStatus(403, detail: "account-disabled")),
             (.init(status: 200, body: "{}"), .invalidResponse),
         ]
         for (reply, expected) in cases {

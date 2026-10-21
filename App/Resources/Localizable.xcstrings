@@ -86,6 +86,23 @@
         }
       }
     },
+    "common.errorDetails" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detalles: %@"
+          }
+        }
+      }
+    },
     "common.networkError" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -426,6 +443,23 @@
         }
       }
     },
+    "login.serverError" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplenote rejected the request (HTTP %lld)."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplenote rechazó la solicitud (HTTP %lld)."
+          }
+        }
+      }
+    },
     "login.sessionExpired" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -473,6 +507,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Demasiados intentos. Espera unos minutos e inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "login.unexpectedResponse" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplenote sent a response the app could not read."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Simplenote envió una respuesta que la app no pudo leer."
           }
         }
       }
