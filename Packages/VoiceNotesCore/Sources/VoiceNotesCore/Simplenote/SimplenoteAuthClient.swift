@@ -31,6 +31,9 @@ public struct SimplenoteAuthClient: Sendable {
     public static let baseURL = URL(string: "https://app.simplenote.com/")!
     /// Sync tokens are scoped by request source; the iOS app uses "iOS".
     public static let requestSource = "iOS"
+    /// The server only accepts a request-login without a reCAPTCHA token from clients whose User-Agent starts
+    /// with "Simplenote/" (like the official apps); any other agent gets an HTML "400 Bad Request".
+    public static let userAgent = "Simplenote/4.54 VoiceNotes (iOS)"
     public static let codeLength = 6
 
     private let transport: HTTPTransport
@@ -96,6 +99,7 @@ public struct SimplenoteAuthClient: Sendable {
         request.timeoutInterval = 30
         request.cachePolicy = .reloadIgnoringLocalCacheData
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(Self.userAgent, forHTTPHeaderField: "User-Agent")
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         let data: Data
         let response: HTTPURLResponse
