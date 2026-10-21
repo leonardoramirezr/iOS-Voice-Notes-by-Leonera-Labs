@@ -1,24 +1,24 @@
 import SwiftUI
 
+/// Chooses the screen for the current session state.
 struct RootView: View {
-    @Environment(AppModel.self) private var model
+    @Environment(AppModel.self) private var app
 
     var body: some View {
-        NavigationStack {
-            List {
-                Section {
-                    LabeledContent(L10n.version, value: BuildInfo.versionDescription)
-                    LabeledContent(L10n.buildName, value: BuildInfo.buildName)
-                    LabeledContent(L10n.localNotes, value: String(model.noteCount))
-                }
-                if let error = model.startupError {
-                    Section {
-                        Text(error)
-                            .foregroundStyle(.red)
-                    }
-                }
+        switch app.route {
+        case .loggedOut:
+            LoginView()
+        case .sessionExpired(let email):
+            LoginView(expiredEmail: email)
+        case .ready:
+            if let engine = app.engine {
+                NotesListView()
+                    .environment(\.managedObjectContext, engine.context)
             }
-            .navigationTitle(L10n.appName)
+        case .signingOut:
+            ProgressView(L10n.signingOut)
+        case .failed(let message):
+            ContentUnavailableView(L10n.startupFailed, systemImage: "exclamationmark.triangle", description: Text(message))
         }
     }
 }

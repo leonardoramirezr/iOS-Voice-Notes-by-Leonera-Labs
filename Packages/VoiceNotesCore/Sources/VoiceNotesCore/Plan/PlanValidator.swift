@@ -95,7 +95,7 @@ public enum PlanValidator {
     }
 
     /// The most recently modified note whose title matches, ignoring case, accents and punctuation.
-    static func existingNote(titled title: String, in notes: [NoteRecord]) -> NoteRecord? {
+    public static func existingNote(titled title: String, in notes: [NoteRecord]) -> NoteRecord? {
         let key = NoteText.normalize(title)
         guard !key.isEmpty else {
             return nil
