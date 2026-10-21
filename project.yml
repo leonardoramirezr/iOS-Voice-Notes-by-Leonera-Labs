@@ -1,0 +1,83 @@
+name: VoiceNotes
+
+options:
+  bundleIdPrefix: com.leonardoramirezr
+  deploymentTarget:
+    iOS: "26.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+
+settings:
+  base:
+    # CI overrides these on the xcodebuild command line.
+    APP_BUNDLE_IDENTIFIER: com.leonardoramirezr.voicenotesbyleoneralabs
+    VN_BUILD_NAME: local
+    MARKETING_VERSION: "0.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.0"
+    SWIFT_STRICT_CONCURRENCY: minimal
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+
+packages:
+  VoiceNotesCore:
+    path: Packages/VoiceNotesCore
+  VoiceNotesSync:
+    path: Packages/VoiceNotesSync
+
+targets:
+  VoiceNotes:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: App
+        excludes:
+          - Info.plist
+    dependencies:
+      - package: VoiceNotesCore
+      - package: VoiceNotesSync
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Voice Notes by Leonera Labs
+        CFBundleName: $(PRODUCT_NAME)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [en, es]
+        LSRequiresIPhoneOS: true
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIRequiredDeviceCapabilities: [arm64]
+        NSMicrophoneUsageDescription: Voice Notes records your voice commands to transcribe them and update your notes.
+        ITSAppUsesNonExemptEncryption: false
+        VNBuildName: $(VN_BUILD_NAME)
+    settings:
+      base:
+        PRODUCT_NAME: VoiceNotes
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_IDENTIFIER)
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
+        LD_RUNPATH_SEARCH_PATHS: ["$(inherited)", "@executable_path/Frameworks"]
+        OTHER_LDFLAGS: ["$(inherited)", "-ObjC"]
+        ENABLE_PREVIEWS: NO
+
+schemes:
+  VoiceNotes:
+    build:
+      targets:
+        VoiceNotes: all
+    run:
+      config: Debug
+    archive:
+      config: Release
