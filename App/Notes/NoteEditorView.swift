@@ -4,13 +4,15 @@ import VoiceNotesCore
 import VoiceNotesSync
 
 struct NoteEditorView: View {
+    @Environment(AppModel.self) private var app
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @State private var model: NoteEditorModel
     @State private var confirmTrash = false
     @State private var deletedElsewhere = false
-    @State private var showVoice = false
-    @State private var voiceTarget: NoteRecord?
+    /// The voice command being recorded or processed for this note.
+    @State private var voice: VoiceCommandModel?
+    @State private var showVoiceReview = false
     @FocusState private var isFocused: Bool
 
     init(note: Note?, engine: SyncEngine) {
@@ -45,16 +47,30 @@ struct NoteEditorView: View {
             }
             .safeAreaBar(edge: .bottom) {
                 if model.note != nil {
-                    HStack {
-                        Spacer()
-                        voiceButton
-                    }
+                    NoteVoiceBar(
+                        voice: voice,
+                        onStart: startVoice,
+                        onCancel: cancelVoice,
+                        onTogglePause: toggleVoicePause,
+                        onSend: { voice?.stopRecording() }
+                    )
                     .padding(.horizontal, 20)
                     .padding(.bottom, 6)
                 }
             }
-            .fullScreenCover(isPresented: $showVoice, onDismiss: { model.reloadSavedContent() }) {
-                VoiceCommandView(focusedNote: voiceTarget)
+            .onChange(of: voice?.phase) { _, phase in
+                // Processing finished: show the review (or the question or error) full screen.
+                switch phase {
+                case .some(.review), .some(.clarification), .some(.failed):
+                    showVoiceReview = true
+                default:
+                    break
+                }
+            }
+            .fullScreenCover(isPresented: $showVoiceReview, onDismiss: finishVoice) {
+                if let voice {
+                    VoiceCommandView(model: voice)
+                }
             }
             .onChange(of: model.text) {
                 model.textDidChange()
@@ -70,6 +86,11 @@ struct NoteEditorView: View {
                 }
             }
             .onDisappear {
+                if !showVoiceReview {
+                    // Leaving the note stops a recording in progress.
+                    voice?.cancel()
+                    voice = nil
+                }
                 model.save()
             }
             .onReceive(NotificationCenter.default.publisher(for: .notesWillChangeRemotely)) { notification in
@@ -93,24 +114,45 @@ struct NoteEditorView: View {
             }
     }
 
-    /// Floating button that dictates a change to this note only.
-    private var voiceButton: some View {
-        Button {
-            guard let target = model.voiceCommandTarget() else {
-                return
-            }
-            isFocused = false
-            voiceTarget = target
-            showVoice = true
-        } label: {
-            Image(systemName: "mic.fill")
-                .font(.title2)
-                .foregroundStyle(Color.accentColor)
-                .frame(width: 60, height: 60)
-                .contentShape(Circle())
+    // MARK: - Voice commands
+
+    /// Starts recording a command that only changes this note.
+    private func startVoice() {
+        guard voice == nil, let target = model.voiceCommandTarget() else {
+            return
         }
-        .buttonStyle(.plain)
-        .glassEffect(.regular.interactive(), in: .circle)
-        .accessibilityLabel(L10n.editorVoiceEdit)
+        isFocused = false
+        let command = VoiceCommandModel(app: app, focusedNote: target)
+        withAnimation(.bouncy) {
+            voice = command
+        }
+        Task {
+            await command.startRecording()
+        }
+    }
+
+    private func toggleVoicePause() {
+        guard let voice else {
+            return
+        }
+        if voice.isPaused {
+            voice.resumeRecording()
+        } else {
+            voice.pauseRecording()
+        }
+    }
+
+    private func cancelVoice() {
+        voice?.cancel()
+        withAnimation(.bouncy) {
+            voice = nil
+        }
+    }
+
+    /// The review was closed (cancelled or saved): back to the note with the saved text.
+    private func finishVoice() {
+        voice?.cancel()
+        voice = nil
+        model.reloadSavedContent()
     }
 }

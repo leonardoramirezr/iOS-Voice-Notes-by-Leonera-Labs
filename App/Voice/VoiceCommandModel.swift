@@ -23,12 +23,17 @@ final class VoiceCommandModel {
 
     /// Longest rate-limit pause the app waits for before giving up.
     static let maximumRateLimitWait: TimeInterval = 20
+    /// Input levels kept for the waveform.
+    static let levelHistoryCount = 40
 
     private(set) var phase: Phase = .starting
     private(set) var conversation: [ConversationTurn] = []
     private(set) var changes: [ProposedChange] = []
     private(set) var summary: String?
     private(set) var level: Double = 0
+    /// Recent input levels, oldest first, for the waveform.
+    private(set) var levels: [Double] = []
+    private(set) var isPaused = false
     private(set) var elapsed: TimeInterval = 0
     private(set) var needsGroqKey = false
 
@@ -70,16 +75,43 @@ final class VoiceCommandModel {
             phase = .failed(L10n.voiceRecordingFailed)
             return
         }
+        levels = []
+        isPaused = false
         phase = .recording
         startMetering()
+    }
+
+    func pauseRecording() {
+        guard phase == .recording, !isPaused else {
+            return
+        }
+        recorder.pause()
+        isPaused = true
+        level = 0
+    }
+
+    func resumeRecording() {
+        guard phase == .recording, isPaused else {
+            return
+        }
+        do {
+            try recorder.resume()
+            isPaused = false
+        } catch {
+            meterTask?.cancel()
+            recorder.cancel()
+            phase = .failed(L10n.voiceRecordingFailed)
+        }
     }
 
     func stopRecording() {
         meterTask?.cancel()
         level = 0
+        isPaused = false
         guard phase == .recording, let recording = recorder.stop() else {
             return
         }
+        phase = .transcribing
         work = Task { [weak self] in
             await self?.process(recording)
         }
@@ -106,12 +138,20 @@ final class VoiceCommandModel {
                 guard let self else {
                     return
                 }
-                if !self.recorder.isRecording {
+                if self.recorder.elapsed >= AudioRecorder.maximumDuration
+                    || (!self.recorder.isRecording && !self.recorder.isPaused) {
                     // The recording reached its maximum length.
                     self.stopRecording()
                     return
                 }
-                self.level = self.recorder.level()
+                if !self.recorder.isPaused {
+                    let level = self.recorder.level()
+                    self.level = level
+                    self.levels.append(level)
+                    if self.levels.count > Self.levelHistoryCount {
+                        self.levels.removeFirst(self.levels.count - Self.levelHistoryCount)
+                    }
+                }
                 self.elapsed = self.recorder.elapsed
                 try? await Task.sleep(for: .milliseconds(80))
             }

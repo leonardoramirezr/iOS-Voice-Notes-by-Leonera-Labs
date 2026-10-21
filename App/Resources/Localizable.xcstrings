@@ -1225,6 +1225,23 @@
         }
       }
     },
+    "voice.cancelRecording" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel recording"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar grabación"
+          }
+        }
+      }
+    },
     "voice.clarificationFallback" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1446,6 +1463,23 @@
         }
       }
     },
+    "voice.pauseRecording" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause recording"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pausar grabación"
+          }
+        }
+      }
+    },
     "voice.planning" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1459,6 +1493,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Preparando los cambios…"
+          }
+        }
+      }
+    },
+    "voice.processing" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Processing the audio…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Procesando el audio…"
           }
         }
       }
@@ -1514,6 +1565,23 @@
         }
       }
     },
+    "voice.resumeRecording" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resume recording"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reanudar grabación"
+          }
+        }
+      }
+    },
     "voice.reviewTitle" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1544,6 +1612,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Guardando…"
+          }
+        }
+      }
+    },
+    "voice.send" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send audio"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviar audio"
           }
         }
       }

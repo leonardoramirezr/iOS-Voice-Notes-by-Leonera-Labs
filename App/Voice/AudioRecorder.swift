@@ -16,17 +16,22 @@ final class AudioRecorder {
     static let maximumDuration: TimeInterval = 120
 
     private var recorder: AVAudioRecorder?
+    /// Start of the current recording stretch; nil while paused.
     private var startDate: Date?
+    /// Recorded time before the last pause.
+    private var recordedBeforePause: TimeInterval = 0
+    private(set) var isPaused = false
 
     var isRecording: Bool {
         recorder?.isRecording ?? false
     }
 
+    /// Recorded time, without the time spent paused.
     var elapsed: TimeInterval {
-        guard let startDate, recorder != nil else {
+        guard recorder != nil else {
             return 0
         }
-        return Date().timeIntervalSince(startDate)
+        return recordedBeforePause + (startDate.map { Date().timeIntervalSince($0) } ?? 0)
     }
 
     func requestPermission() async -> Bool {
@@ -61,6 +66,30 @@ final class AudioRecorder {
         }
         self.recorder = recorder
         startDate = Date()
+        recordedBeforePause = 0
+        isPaused = false
+    }
+
+    func pause() {
+        guard let recorder, recorder.isRecording else {
+            return
+        }
+        recorder.pause()
+        recordedBeforePause = elapsed
+        startDate = nil
+        isPaused = true
+    }
+
+    /// Continues a paused recording in the same file. The caller stops it at `maximumDuration`.
+    func resume() throws {
+        guard let recorder, isPaused else {
+            return
+        }
+        guard recorder.record() else {
+            throw RecorderError.couldNotStart
+        }
+        startDate = Date()
+        isPaused = false
     }
 
     /// The input level between 0 and 1, for the recording animation.
@@ -81,6 +110,8 @@ final class AudioRecorder {
         recorder.stop()
         self.recorder = nil
         startDate = nil
+        recordedBeforePause = 0
+        isPaused = false
         return Recording(url: recorder.url, duration: min(duration, Self.maximumDuration))
     }
 
@@ -89,6 +120,8 @@ final class AudioRecorder {
         recorder?.deleteRecording()
         recorder = nil
         startDate = nil
+        recordedBeforePause = 0
+        isPaused = false
     }
 
     /// Gives the audio route back to other apps when the voice flow closes.
