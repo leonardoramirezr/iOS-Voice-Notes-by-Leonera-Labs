@@ -119,6 +119,22 @@ final class CommandPipelineTests: XCTestCase {
         XCTAssertTrue(model.planInputs[1].contains("could not be applied"))
     }
 
+    func testPlansInsideTheOpenNoteWithoutPickingNotes() async throws {
+        let super_ = note("k1", "Súper\n- [ ] Leche")
+        let model = ScriptedModel(resolve: [], plan: [appendAnswer(["- [ ] Pan"])])
+        let outcome = try await CommandPipeline(model: model).plan(
+            conversation: [ConversationTurn(role: .user, text: "añade pan")], in: super_
+        )
+        guard case .review(let changes, _, _) = outcome else {
+            return XCTFail("expected review, got \(outcome)")
+        }
+        XCTAssertEqual(changes.count, 1)
+        XCTAssertEqual(changes[0].target, .existing(key: "k1"))
+        XCTAssertEqual(changes[0].result.newContent, "Súper\n- [ ] Leche\n- [ ] Pan")
+        XCTAssertTrue(model.resolveInputs.isEmpty)
+        XCTAssertTrue(model.planInputs[0].contains("\"instruction\":\"añade pan\""))
+    }
+
     func testReapplyAfterRemoteEdit() throws {
         let change = ProposedChange(
             id: "T1", target: .existing(key: "k1"), title: "Súper", originalContent: "Súper\n- [ ] Pan",

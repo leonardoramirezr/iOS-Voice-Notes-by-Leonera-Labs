@@ -121,17 +121,28 @@ final class AppModel {
 
     /// Active notes as plain values for the voice pipeline (notes without a key yet are skipped).
     func noteRecords() -> [NoteRecord] {
-        (engine?.store.activeNotes() ?? []).compactMap { note in
-            guard let key = note.simperiumKey, !key.isEmpty else {
-                return nil
-            }
-            return NoteRecord(
-                key: key,
-                title: note.title,
-                content: note.content ?? "",
-                modificationDate: note.modificationDate ?? .distantPast
-            )
+        (engine?.store.activeNotes() ?? []).compactMap(Self.record(of:))
+    }
+
+    /// The active note with this key as a plain value, or nil when it was deleted or trashed.
+    func noteRecord(withKey key: String) -> NoteRecord? {
+        guard let note = engine?.store.note(withKey: key), !note.isTrashed, !note.isDeleted else {
+            return nil
         }
+        return Self.record(of: note)
+    }
+
+    /// The note as a plain value, or nil when Simperium did not give it a key yet.
+    static func record(of note: Note) -> NoteRecord? {
+        guard let key = note.simperiumKey, !key.isEmpty else {
+            return nil
+        }
+        return NoteRecord(
+            key: key,
+            title: note.title,
+            content: note.content ?? "",
+            modificationDate: note.modificationDate ?? .distantPast
+        )
     }
 
     /// Saves reviewed voice changes locally and sends them to Simplenote. Edits are applied again to the

@@ -101,6 +101,13 @@ enum L10n {
         String(localized: "voice.removedLine", defaultValue: "Removed: \(text)")
     }
     static var voiceClarificationFallback: String { String(localized: "voice.clarificationFallback", defaultValue: "I couldn't tell which note to change or what to change. Say it again with the note name and the change.") }
+    static var voiceNoteClarificationFallback: String { String(localized: "voice.noteClarificationFallback", defaultValue: "I couldn't tell what to change in this note. Say it again with the change.") }
+    static var editorVoiceEdit: String { String(localized: "editor.voiceEdit", defaultValue: "Edit this note with your voice") }
+    static var voiceCancelRecording: String { String(localized: "voice.cancelRecording", defaultValue: "Cancel recording") }
+    static var voicePauseRecording: String { String(localized: "voice.pauseRecording", defaultValue: "Pause recording") }
+    static var voiceResumeRecording: String { String(localized: "voice.resumeRecording", defaultValue: "Resume recording") }
+    static var voiceSend: String { String(localized: "voice.send", defaultValue: "Send audio") }
+    static var voiceProcessing: String { String(localized: "voice.processing", defaultValue: "Processing the audio…") }
     static var voiceNothingHeard: String { String(localized: "voice.nothingHeard", defaultValue: "I didn't hear anything. Try again closer to the microphone.") }
     static var voiceMicrophoneDenied: String { String(localized: "voice.microphoneDenied", defaultValue: "Microphone access is off. Turn it on in Settings › Voice Notes.") }
     static var voiceRecordingFailed: String { String(localized: "voice.recordingFailed", defaultValue: "Recording could not start.") }

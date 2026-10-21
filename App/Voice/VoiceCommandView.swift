@@ -1,11 +1,19 @@
 import SwiftUI
 
-/// Full-screen flow of a voice command: recording, progress, questions and the review of the changes.
+/// Full-screen flow of a voice command: recording, progress, questions and the review of the changes. It can
+/// also continue a command recorded elsewhere, such as inside a note.
 struct VoiceCommandView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.dismiss) private var dismiss
     @State private var model: VoiceCommandModel?
     @State private var showSettings = false
+
+    init() {}
+
+    /// Shows a command that was already recorded and processed.
+    init(model: VoiceCommandModel) {
+        _model = State(initialValue: model)
+    }
 
     var body: some View {
         NavigationStack {

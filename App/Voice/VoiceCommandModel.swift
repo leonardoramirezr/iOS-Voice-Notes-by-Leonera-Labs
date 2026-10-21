@@ -3,7 +3,8 @@ import Observation
 import VoiceNotesCore
 
 /// Drives a voice command: record, transcribe with Whisper, plan with the LLM, ask for what is missing,
-/// review and save. The conversation is kept so extra audio completes or corrects the command.
+/// review and save. The conversation is kept so extra audio completes or corrects the command. A command given
+/// inside a note only changes that note.
 @MainActor
 @Observable
 final class VoiceCommandModel {
@@ -22,24 +23,32 @@ final class VoiceCommandModel {
 
     /// Longest rate-limit pause the app waits for before giving up.
     static let maximumRateLimitWait: TimeInterval = 20
+    /// Input levels kept for the waveform.
+    static let levelHistoryCount = 40
 
     private(set) var phase: Phase = .starting
     private(set) var conversation: [ConversationTurn] = []
     private(set) var changes: [ProposedChange] = []
     private(set) var summary: String?
     private(set) var level: Double = 0
+    /// Recent input levels, oldest first, for the waveform.
+    private(set) var levels: [Double] = []
+    private(set) var isPaused = false
     private(set) var elapsed: TimeInterval = 0
     private(set) var needsGroqKey = false
 
     private let app: AppModel
+    /// The note the command was given in; nil when the command can change any note.
+    private let focusedNote: NoteRecord?
     private let recorder = AudioRecorder()
     private let speech = SpeechPlayer()
     private var language: String?
     @ObservationIgnored private var work: Task<Void, Never>?
     @ObservationIgnored private var meterTask: Task<Void, Never>?
 
-    init(app: AppModel) {
+    init(app: AppModel, focusedNote: NoteRecord? = nil) {
         self.app = app
+        self.focusedNote = focusedNote
     }
 
     var lastUserText: String? {
@@ -66,16 +75,43 @@ final class VoiceCommandModel {
             phase = .failed(L10n.voiceRecordingFailed)
             return
         }
+        levels = []
+        isPaused = false
         phase = .recording
         startMetering()
+    }
+
+    func pauseRecording() {
+        guard phase == .recording, !isPaused else {
+            return
+        }
+        recorder.pause()
+        isPaused = true
+        level = 0
+    }
+
+    func resumeRecording() {
+        guard phase == .recording, isPaused else {
+            return
+        }
+        do {
+            try recorder.resume()
+            isPaused = false
+        } catch {
+            meterTask?.cancel()
+            recorder.cancel()
+            phase = .failed(L10n.voiceRecordingFailed)
+        }
     }
 
     func stopRecording() {
         meterTask?.cancel()
         level = 0
+        isPaused = false
         guard phase == .recording, let recording = recorder.stop() else {
             return
         }
+        phase = .transcribing
         work = Task { [weak self] in
             await self?.process(recording)
         }
@@ -102,12 +138,20 @@ final class VoiceCommandModel {
                 guard let self else {
                     return
                 }
-                if !self.recorder.isRecording {
+                if self.recorder.elapsed >= AudioRecorder.maximumDuration
+                    || (!self.recorder.isRecording && !self.recorder.isPaused) {
                     // The recording reached its maximum length.
                     self.stopRecording()
                     return
                 }
-                self.level = self.recorder.level()
+                if !self.recorder.isPaused {
+                    let level = self.recorder.level()
+                    self.level = level
+                    self.levels.append(level)
+                    if self.levels.count > Self.levelHistoryCount {
+                        self.levels.removeFirst(self.levels.count - Self.levelHistoryCount)
+                    }
+                }
                 self.elapsed = self.recorder.elapsed
                 try? await Task.sleep(for: .milliseconds(80))
             }
@@ -127,7 +171,7 @@ final class VoiceCommandModel {
         phase = .transcribing
         do {
             let audio = try Data(contentsOf: recording.url)
-            let titles = app.noteRecords().prefix(20).map(\.title)
+            let titles = focusedNote.map { [$0.title] } ?? app.noteRecords().prefix(20).map(\.title)
             let transcription = try await client.transcribe(
                 audio: audio,
                 fileName: "command.m4a",
@@ -155,17 +199,17 @@ final class VoiceCommandModel {
         let pipeline = CommandPipeline(model: GroqPlanningModel(client: client, model: app.settings.chatModel))
         let outcome: PipelineOutcome
         do {
-            outcome = try await pipeline.plan(conversation: conversation, notes: app.noteRecords())
+            outcome = try await run(pipeline)
         } catch GroqError.rateLimited(let retryAfter) where (retryAfter ?? 5) <= Self.maximumRateLimitWait {
             let seconds = Int((retryAfter ?? 5).rounded(.up))
             phase = .waitingForRateLimit(seconds: seconds)
             try await Task.sleep(for: .seconds(seconds))
             phase = .planning
-            outcome = try await pipeline.plan(conversation: conversation, notes: app.noteRecords())
+            outcome = try await run(pipeline)
         }
         switch outcome {
         case .clarification(let message, let language):
-            let question = message ?? L10n.voiceClarificationFallback
+            let question = message ?? (focusedNote == nil ? L10n.voiceClarificationFallback : L10n.voiceNoteClarificationFallback)
             conversation.append(ConversationTurn(role: .assistant, text: question))
             self.language = language
             changes = []
@@ -179,6 +223,17 @@ final class VoiceCommandModel {
             self.language = language
             phase = .review
         }
+    }
+
+    /// Plans against the current notes, or only against the current text of the focused note.
+    private func run(_ pipeline: CommandPipeline) async throws -> PipelineOutcome {
+        guard let focusedNote else {
+            return try await pipeline.plan(conversation: conversation, notes: app.noteRecords())
+        }
+        guard let note = app.noteRecord(withKey: focusedNote.key) else {
+            throw NoteSaveError.noteMissing(focusedNote.title)
+        }
+        return try await pipeline.plan(conversation: conversation, in: note)
     }
 
     // MARK: - Saving
