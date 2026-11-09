@@ -27,6 +27,21 @@ public enum NoteText {
         return String(body.prefix(limit))
     }
 
+    /// The text after the title line, keeping its line endings. Empty when nothing follows the title.
+    public static func body(of content: String) -> String {
+        let document = NoteDocument(text: content)
+        guard let index = document.titleIndex else {
+            return ""
+        }
+        return document.lines[(index + 1)...].joined(separator: document.lineEnding)
+    }
+
+    /// The text to copy from a note: the whole note or only its body, without whitespace or line breaks at either end.
+    public static func clipboardText(of content: String, includingTitle: Bool) -> String {
+        let text = includingTitle ? content : body(of: content)
+        return text.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     /// A comparison key that ignores case, diacritics, repeated whitespace and surrounding punctuation.
     public static func normalize(_ text: String) -> String {
         let folded = text.folding(options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive], locale: nil)

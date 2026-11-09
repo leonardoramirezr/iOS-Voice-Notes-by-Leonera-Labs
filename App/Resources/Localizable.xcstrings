@@ -171,6 +171,40 @@
         }
       }
     },
+    "editor.copyBody" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy body without title"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar cuerpo sin título"
+          }
+        }
+      }
+    },
+    "editor.copyWithTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy note with title"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copiar nota con título"
+          }
+        }
+      }
+    },
     "editor.deletedElsewhere" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -184,6 +218,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esta nota se eliminó en otro dispositivo."
+          }
+        }
+      }
+    },
+    "editor.menu" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More options"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más opciones"
           }
         }
       }

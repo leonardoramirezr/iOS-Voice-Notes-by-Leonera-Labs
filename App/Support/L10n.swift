@@ -55,6 +55,9 @@ enum L10n {
     static var editorTrashConfirm: String { String(localized: "editor.trashConfirm", defaultValue: "Move this note to the trash?") }
     static var editorMoveToTrash: String { String(localized: "editor.moveToTrash", defaultValue: "Move to Trash") }
     static var editorDeletedElsewhere: String { String(localized: "editor.deletedElsewhere", defaultValue: "This note was deleted on another device.") }
+    static var editorMenu: String { String(localized: "editor.menu", defaultValue: "More options") }
+    static var editorCopyWithTitle: String { String(localized: "editor.copyWithTitle", defaultValue: "Copy note with title") }
+    static var editorCopyBody: String { String(localized: "editor.copyBody", defaultValue: "Copy body without title") }
     static var settingsTitle: String { String(localized: "settings.title", defaultValue: "Settings") }
     static var settingsGroqKey: String { String(localized: "settings.groqKey", defaultValue: "Groq API key") }
     static var settingsGroqKeyPlaceholder: String { String(localized: "settings.groqKeyPlaceholder", defaultValue: "gsk_…") }
