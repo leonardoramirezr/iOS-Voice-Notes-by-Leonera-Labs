@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice Notes by Leonera Labs 0.2.0</title>
+<style>
+:root { color-scheme: light dark; --bg: #f2f2f7; --card: #ffffff; --text: #1c1c1e; --muted: #6c6c70;
+  --accent: #0a66d8; --accent-text: #ffffff; --line: rgba(60, 60, 67, 0.18); --stable: #1f8a3b; --branch: #8e5b00; }
+@media (prefers-color-scheme: dark) { :root { --bg: #000000; --card: #1c1c1e; --text: #f2f2f7; --muted: #a1a1a6;
+  --accent: #3b8cff; --line: rgba(235, 235, 245, 0.18); --stable: #4cd964; --branch: #ffb340; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 16px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; }
+main { max-width: 720px; margin: 0 auto; padding: 24px 16px 48px; }
+header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+header img { width: 72px; height: 72px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); }
+h1 { font-size: 24px; margin: 0; }
+h2 { font-size: 18px; margin: 28px 0 12px; }
+.muted { color: var(--muted); }
+.card { background: var(--card); border-radius: 18px; padding: 18px; margin-bottom: 14px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06); }
+.button { display: inline-block; background: var(--accent); color: var(--accent-text); text-decoration: none;
+  font-weight: 600; padding: 12px 22px; border-radius: 999px; }
+.button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--line); }
+.badge { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+  border: 1px solid currentColor; }
+.badge.stable { color: var(--stable); }
+.badge.branch { color: var(--branch); }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 16px 0 0; }
+dt { color: var(--muted); }
+dd { margin: 0; overflow-wrap: anywhere; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.row .title { font-weight: 600; }
+.actions { display: flex; gap: 8px; }
+a { color: var(--accent); }
+code { font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+<header>
+<img src="icon-512.png" alt="">
+<div><h1>Voice Notes by Leonera Labs</h1><div class="muted">0.2.0 <span class="badge stable">Stable</span></div></div>
+</header>
+<div class="card">
+<a class="button" href="itms-services://?action=download-manifest&amp;url=https%3A%2F%2Fleonardoramirezr.github.io%2FiOS-Voice-Notes-by-Leonera-Labs%2F0.2.0%2Fmanifest.plist">Install on iPhone</a>
+<p class="muted">Open this page in Safari on an iPhone whose UDID is registered in the Apple Developer
+portal, tap <strong>Install</strong> and confirm. The app appears on the home screen when the download finishes.</p>
+<dl>
+<dt>Version</dt><dd>0.2.0 (11)</dd>
+<dt>Branch</dt><dd>main</dd>
+<dt>Commit</dt><dd><a href="https://github.com/leonardoramirezr/iOS-Voice-Notes-by-Leonera-Labs/commit/5297440b6548ab0ca617ff09f1921fc8d5dcbfee">5297440</a></dd>
+<dt>Built</dt><dd>2026-10-21 17:34 UTC</dd>
+<dt>Devices</dt><dd>1</dd>
+<dt>IPA</dt><dd><a href="VoiceNotes.ipa">VoiceNotes.ipa</a></dd>
+</dl>
+</div>
+<p><a href="../">All builds</a></p>
+</main>
+</body>
+</html>

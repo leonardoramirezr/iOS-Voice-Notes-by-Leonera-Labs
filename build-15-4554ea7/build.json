@@ -1,0 +1,16 @@
+{
+  "branch": "claude/jolly-allen-gzn6ct",
+  "build_number": "15",
+  "bundle_id": "com.leonardoramirezr.voicenotesbyleoneralabs",
+  "channel": "branch",
+  "created_at": "2026-11-09T20:20:06Z",
+  "devices": "2",
+  "ipa": "VoiceNotes.ipa",
+  "repo": "leonardoramirezr/iOS-Voice-Notes-by-Leonera-Labs",
+  "run_id": "42691424361",
+  "run_number": "15",
+  "sha": "4554ea751a550fa8fe3f029e15d093e383fe86ba",
+  "tag": "build-15-4554ea7",
+  "title": "Voice Notes by Leonera Labs",
+  "version": "0.3.0"
+}

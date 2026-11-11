@@ -1,0 +1,16 @@
+{
+  "branch": "main",
+  "build_number": "14",
+  "bundle_id": "com.leonardoramirezr.voicenotesbyleoneralabs",
+  "channel": "stable",
+  "created_at": "2026-10-21T21:09:50Z",
+  "devices": "1",
+  "ipa": "VoiceNotes.ipa",
+  "repo": "leonardoramirezr/iOS-Voice-Notes-by-Leonera-Labs",
+  "run_id": "39676237827",
+  "run_number": "14",
+  "sha": "6dd22981ab4aaa2576e1ba9da932f7a6d2a0a390",
+  "tag": "0.3.0",
+  "title": "Voice Notes by Leonera Labs",
+  "version": "0.3.0"
+}
