@@ -13,7 +13,8 @@ it to Simplenote when you confirm.
   Notes are stored locally in SQLite and synced in the background, including offline edits.
 - **Email code login**, the default login of the official app: enter your email, then the 6-character code
   Simplenote sends you. No password or API key is needed.
-- **Notes list** with pinned notes first, search, pin and trash, plus a plain-text editor.
+- **Notes list** with pinned notes first, search, pin and trash, plus a plain-text editor. The editor's menu
+  pins, trashes or copies the note, with or without its title.
 - **Floating Liquid Glass menu** (iOS 26): Search, Add manually, Add via audio.
 - **Voice commands** powered by [Groq](https://groq.com):
   1. Speech is transcribed with Whisper (`whisper-large-v3` by default).

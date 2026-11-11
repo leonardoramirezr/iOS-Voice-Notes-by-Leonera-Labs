@@ -1,5 +1,6 @@
 import Combine
 import SwiftUI
+import UIKit
 import VoiceNotesCore
 import VoiceNotesSync
 
@@ -28,21 +29,40 @@ struct NoteEditorView: View {
             .navigationTitle(model.title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    if model.note != nil {
-                        Button {
-                            model.togglePinned()
-                        } label: {
-                            Image(systemName: model.isPinned ? "pin.slash" : "pin")
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        if model.note != nil {
+                            Button {
+                                model.togglePinned()
+                            } label: {
+                                Label(
+                                    model.isPinned ? L10n.notesUnpin : L10n.notesPin,
+                                    systemImage: model.isPinned ? "pin.slash" : "pin"
+                                )
+                            }
+                            Button(role: .destructive) {
+                                confirmTrash = true
+                            } label: {
+                                Label(L10n.notesTrash, systemImage: "trash")
+                            }
+                            Divider()
                         }
-                        .accessibilityLabel(model.isPinned ? L10n.notesUnpin : L10n.notesPin)
                         Button {
-                            confirmTrash = true
+                            copyNote(includingTitle: true)
                         } label: {
-                            Image(systemName: "trash")
+                            Label(L10n.editorCopyWithTitle, systemImage: "doc.on.doc")
                         }
-                        .accessibilityLabel(L10n.notesTrash)
+                        .disabled(NoteText.clipboardText(of: model.text, includingTitle: true).isEmpty)
+                        Button {
+                            copyNote(includingTitle: false)
+                        } label: {
+                            Label(L10n.editorCopyBody, systemImage: "text.alignleft")
+                        }
+                        .disabled(NoteText.clipboardText(of: model.text, includingTitle: false).isEmpty)
+                    } label: {
+                        Image(systemName: "line.3.horizontal")
                     }
+                    .accessibilityLabel(L10n.editorMenu)
                 }
             }
             .safeAreaBar(edge: .bottom) {
@@ -112,6 +132,13 @@ struct NoteEditorView: View {
                     dismiss()
                 }
             }
+    }
+
+    // MARK: - Copy
+
+    /// Copies the text on screen, including unsaved edits, without the whitespace at either end.
+    private func copyNote(includingTitle: Bool) {
+        UIPasteboard.general.string = NoteText.clipboardText(of: model.text, includingTitle: includingTitle)
     }
 
     // MARK: - Voice commands

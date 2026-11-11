@@ -34,6 +34,23 @@ final class NoteTextTests: XCTestCase {
         XCTAssertEqual(NoteText.preview(of: "Only title"), "")
     }
 
+    func testClipboardTextTrimsWhitespaceAtBothEnds() {
+        let note = "  \n# Muebles  \n\n- Leche\n- Pan \n\n  "
+        XCTAssertEqual(NoteText.clipboardText(of: note, includingTitle: true), "# Muebles  \n\n- Leche\n- Pan")
+        XCTAssertEqual(NoteText.clipboardText(of: note, includingTitle: false), "- Leche\n- Pan")
+    }
+
+    func testClipboardBodyIsEmptyForTitleOnlyNotes() {
+        XCTAssertEqual(NoteText.clipboardText(of: "  Súper \n\n", includingTitle: false), "")
+        XCTAssertEqual(NoteText.clipboardText(of: "  Súper \n\n", includingTitle: true), "Súper")
+        XCTAssertEqual(NoteText.clipboardText(of: " \n ", includingTitle: true), "")
+        XCTAssertEqual(NoteText.clipboardText(of: " \n ", includingTitle: false), "")
+    }
+
+    func testBodyKeepsLineEndings() {
+        XCTAssertEqual(NoteText.body(of: "Title\r\n- one\r\n- two\r\n"), "- one\r\n- two")
+    }
+
     func testNormalizeIgnoresCaseDiacriticsAndPunctuation() {
         XCTAssertEqual(NoteText.normalize("  ¡Súper   Mercado! "), "super mercado")
         XCTAssertEqual(NoteText.normalize("MUEBLES"), NoteText.normalize("muebles"))
